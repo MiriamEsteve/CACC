@@ -9,6 +9,7 @@ CACC(data, x, y)
 data	-- > Data set
 
 x    -->  Dependent variable (binary)
+
 y	   -->  Independents variables
 
 # Examples
