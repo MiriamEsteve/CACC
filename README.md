@@ -28,16 +28,21 @@ CACC_matrix <- CACC(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
 print(CACC_matrix)
 
  -------------------------- Importance Variable  ------------------------------
+ 
 imp_var <- variable_importance(df)
 
  ------------------------------- Main effect  ---------------------------------
+ 
 main_eff <- main_effect(df)
 
  ------------------------- Conduct a Chi-square test --------------------------
+ 
 xsq <- CACC_XSQ(CACC_matrix)
 
  -------------------------------- Conduct a SCI  ------------------------------
+ 
 SCI <- SCI(CACC_matrix)
 
  ----------------------- Conduct a Plot Lorenz Curve  -------------------------
+ 
 ggLorenzCurve(CACC_matrix)
