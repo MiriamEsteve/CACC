@@ -5,9 +5,11 @@ CACC(data)
 CACC(data, x, y)
 
 # Arguments
-data	Data set
-x     Dependent variable (binary)
-y	    Independents variables
+
+data	-- > Data set
+
+x    -->  Dependent variable (binary)
+y	   -->  Independents variables
 
 # Examples
 
