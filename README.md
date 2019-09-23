@@ -15,7 +15,7 @@ y	   -->  Independents variables
 
 # Examples
 
--------------------------- Conduct a CACC matrix --------------------------
+-------------------------- Conduct a CACC matrix ---------------------------
 
 - Alternative 1: let the function automatize the variable selection process.
 CACC_matrix <- CACC(df)
