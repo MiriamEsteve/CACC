@@ -52,7 +52,7 @@ CACC <- function (data,
     levels(data[[y]]) <- c(0, 1)
     print("Done.")
 
-  #     Problem: if R understands taht "No" > "Yes" then this variable gives the
+  #     Problem: if R understands that "No" > "Yes" then this variable gives the
   #     value "1" to "No" and "0" to "Yes".
   } else if (is.double(data[[y]])) {
 
