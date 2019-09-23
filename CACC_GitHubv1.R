@@ -111,7 +111,7 @@ normalize <- function(x) {
 }
 
 
-variable_importance <- function(data,
+importance_variable <- function(data,
                                 x = colnames(data[, - ncol(data)]),
                                 y = colnames(data[, ncol(data)])){
   #First, calculate CACC matrix
@@ -402,7 +402,7 @@ CACC_matrix <- CACC(df)
 
 print(CACC_matrix)
 # -------------------------- Importance Variable  ------------------------------
-imp_var <- variable_importance(df)
+imp_var <- importance_variable(df)
 
 # ------------------------------- Main effect  ---------------------------------
 main_eff <- main_effect(df)
