@@ -2,6 +2,7 @@
 
 # Usage
 CACC(data)
+
 CACC(data, x, y)
 
 # Arguments
@@ -32,7 +33,7 @@ print(CACC_matrix)
 
  -------------------------- Importance Variable  ------------------------------
  
-imp_var <- variable_importance(df)
+imp_var <- importance_variable(df)
 
  ------------------------------- Main effect  ---------------------------------
  
