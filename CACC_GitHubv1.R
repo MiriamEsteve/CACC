@@ -217,6 +217,42 @@ main_effect <- function(data,
 
 
 # ==============================================================================
+# CACC_Xsq function in base R
+# ==============================================================================
+
+CACC_XSQ <- function (cacc_matrix){
+  #If the Break variable does not exist, cacc matrix is calculated.
+  if(("N_Break" %in% names(cacc_matrix)) == FALSE){
+    cacc_matrix <- CACC(cacc_matrix)
+    print("CACC matrix has been calculate")
+  }
+
+  # Declare the variable containing the number of times each dominant profile is
+  #   observed in the sample.
+  obs <- cacc_matrix$N_Break
+
+  # Count the dominant profiles observed.
+  N_obs <- nrow(data.frame(obs))
+
+  # Obtain the expected count vector by weighting the total amount of dominant
+  # observations by the amount of dominant profiles observed.
+  exp <- rep(sum(obs) / N_obs, N_obs)
+
+  # Perform the Chi-square test.
+  # rescale.p = TRUE because probabilities must sum 1.
+  xsq <- chisq.test(x = obs, p = exp, rescale.p = TRUE)
+
+  #Show result
+  xsq <- data.frame("X_Square" = xsq$statistic,
+                    "df" = xsq$parameter,
+                    "p" = xsq$p.value)
+  rownames(xsq) <- NULL
+
+  return (xsq)
+}
+
+
+# ==============================================================================
 # data_prepare function in base R
 # Funci??n que prepara CACC_matrix con los c??lculos necesarios para SCI
 # ==============================================================================
