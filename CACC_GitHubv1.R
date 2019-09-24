@@ -99,20 +99,26 @@ CACC <- function (data,
 #     x = independent variables (IV)
 #     y = dependet variable (DV)
 # ==============================================================================
+### Function that normalizes the results ###
 normalize <- function(x) {
     return ((x - min(x)) / (max(x) - min(x)))
 }
 
-
+### Importance variable Ranking ###
 importance_variable <- function(data,
                                 x = colnames(data[, - ncol(data)]),
                                 y = colnames(data[, ncol(data)])){
-  #First, calculate CACC matrix
-  cacc_matrix <- CACC(data)
+  # First, calculate CACC matrix
+    #If the Break variable does not exist, cacc matrix is calculated.
+  if(("N_Break" %in% names(cacc_matrix)) == FALSE){
+    cacc_matrix <- CACC(cacc_matrix)
+    print("CACC matrix has been calculate")
+  }
 
-  #Calculate total importance from cacc_matrix
+  # Calculate total importance from cacc_matrix
   cacc_matrix[is.na(cacc_matrix)] <- 0   #Replace 0 to NA values
 
+  # Weighted average
   mean_x <- mean(cacc_matrix$p)
   support <-  nrow(cacc_matrix)
 
@@ -128,9 +134,11 @@ importance_variable <- function(data,
     support <-  nrow(cacc)
     var_imp <-  union(var_imp, mean_x * support) #Add in a array P for each x
   }
-
+  
+  # Normalize results
   normal <- normalize(abs(var_imp - var_imp[1]))*100
-  #Show result
+  
+  #Save result in a data frame
   Var_Importance <- data.frame("Attribute" = x,
                     "Importance.of.Variable" = normal[-1])
 
@@ -147,11 +155,14 @@ importance_variable <- function(data,
 #     x = independent variables (IV)
 #     y = dependet variable (DV)
 # ==============================================================================
+### Function that requests the information of each variable from the user ###
 my_scan <- function(list_values, column_name){
   #Order ascending
   list_values <- t( list_values[order(list_values[[1]]), ] )
   cat("Analyze value for column ", column_name, " (values: ",list_values[1,],"): ")
   value <- scan(nmax = 1)
+  
+  #Re-ask for information because it is not correct
   while(is.na( match(value, list_values) ))
   {
     cat("Err value, repeat: column ", column_name, " (values: ",list_values[1,],"): ")
@@ -161,11 +172,16 @@ my_scan <- function(list_values, column_name){
   return (value)
 }
 
+### Main effect ###
 main_effect <- function(data,
                         x = colnames(data[, - ncol(data)]),
                         y = colnames(data[, ncol(data)])){
   #First, calculate CACC matrix
-  cacc_matrix <- CACC(data)
+    #If the Break variable does not exist, cacc matrix is calculated.
+  if(("N_Break" %in% names(cacc_matrix)) == FALSE){
+    cacc_matrix <- CACC(cacc_matrix)
+    print("CACC matrix has been calculate")
+  }
   
   #Replace 0 to NA values
   cacc_matrix[is.na(cacc_matrix)] <- 0
@@ -175,10 +191,13 @@ main_effect <- function(data,
   
   list_total = list() #List of lists
   
+  #Request information for each independent variable
   for(i in 1:columns){
     #Select and check values
     value <- my_scan(unique(cacc_matrix[i]), x[i])
     
+    #Calculating the differential probability of identical pairs of case configurations
+    #except for one variable
     PDI <- cacc_matrix %>% 
       group_by_at(vars(-c(i, N_Break, p))) %>% 
       filter(n() > 1)  %>% 
@@ -195,9 +214,6 @@ main_effect <- function(data,
     for(j in seq(list_total[[i]]))
       dat[j,i] <- list_total[[i]][j]
   colnames(dat) <- x
-  
-  #Replace 0 to NA values
-  #dat[dat == 0] <- NA
   
   #Descriptive
   print(summary(dat))
