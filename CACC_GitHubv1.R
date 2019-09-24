@@ -108,10 +108,10 @@ normalize <- function(x) {
 importance_variable <- function(data,
                                 x = colnames(data[, - ncol(data)]),
                                 y = colnames(data[, ncol(data)])){
-  # First, calculate CACC matrix
+  #First, calculate CACC matrix
     #If the Break variable does not exist, cacc matrix is calculated.
-  if(("N_Break" %in% names(cacc_matrix)) == FALSE){
-    cacc_matrix <- CACC(cacc_matrix)
+  if(("N_Break" %in% names(data)) == FALSE){
+    cacc_matrix <- CACC(data)
     print("CACC matrix has been calculate")
   }
 
@@ -178,8 +178,8 @@ main_effect <- function(data,
                         y = colnames(data[, ncol(data)])){
   #First, calculate CACC matrix
     #If the Break variable does not exist, cacc matrix is calculated.
-  if(("N_Break" %in% names(cacc_matrix)) == FALSE){
-    cacc_matrix <- CACC(cacc_matrix)
+  if(("N_Break" %in% names(data)) == FALSE){
+    cacc_matrix <- CACC(data)
     print("CACC matrix has been calculate")
   }
   
