@@ -15,6 +15,10 @@ y	   -->  Independents variables
 
 # Examples
 
+------------------------------ Read dataset (df) ---------------------------
+
+df <- read_excel(path = "", sheet = "")
+
 -------------------------- Conduct a CACC matrix ---------------------------
 
 - Alternative 1: let the function automatize the variable selection process.
@@ -24,12 +28,10 @@ CACC_matrix <- CACC(df)
 CACC_matrix <- CACC(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
 
 - Alternative 3: define the IV and let the function define the DV automatically.
- CACC_matrix <- CACC(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
+CACC_matrix <- CACC(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
 
 - Alternative 4: define the DV and let the function define the IV automatically.
- CACC_matrix <- CACC(df, y = "y")
-
-print(CACC_matrix)
+CACC_matrix <- CACC(df, y = "y")
 
  -------------------------- Importance Variable  ------------------------------
  
