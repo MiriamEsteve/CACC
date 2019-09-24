@@ -22,15 +22,19 @@ df <- read_excel(path = "", sheet = "")
 -------------------------- Conduct a CACC matrix ---------------------------
 
 - Alternative 1: let the function automatize the variable selection process.
+
 CACC_matrix <- CACC(df)
 
 - Alternative 2: define all variables, both independent variables and DV.
+
 CACC_matrix <- CACC(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
 
 - Alternative 3: define the IV and let the function define the DV automatically.
+
 CACC_matrix <- CACC(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
 
 - Alternative 4: define the DV and let the function define the IV automatically.
+
 CACC_matrix <- CACC(df, y = "y")
 
  -------------------------- Importance Variable  ------------------------------
