@@ -112,7 +112,6 @@ importance_variable <- function(data,
     #If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(data)) == FALSE){
     cacc_matrix <- CACC(data)
-    print("CACC matrix has been calculate")
   }
 
   # Calculate total importance from cacc_matrix
@@ -180,7 +179,6 @@ main_effect <- function(data,
     #If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(data)) == FALSE){
     cacc_matrix <- CACC(data)
-    print("CACC matrix has been calculate")
   }
   
   #Replace 0 to NA values
@@ -411,10 +409,30 @@ CACC_matrix <- CACC(df)
 
 print(CACC_matrix)
 # -------------------------- Importance Variable  ------------------------------
+# Alternative 1: let the function automatize the variable selection process.
 imp_var <- importance_variable(df)
 
+# Alternative 2: define all variables, both independent variables and DV.
+# imp_var <- importance_variable(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
+
+# Alternative 3: define the IV and let the function define the DV automatically.
+# imp_var <- importance_variable(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
+
+# Alternative 4: define the DV and let the function define the IV automatically.
+# imp_var <- importance_variable(df, y = "y")
+
 # ------------------------------- Main effect  ---------------------------------
+# Alternative 1: let the function automatize the variable selection process.
 main_eff <- main_effect(df)
+
+# Alternative 2: define all variables, both independent variables and DV.
+# main_eff <- main_effect(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
+
+# Alternative 3: define the IV and let the function define the DV automatically.
+# main_eff <- main_effect(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
+
+# Alternative 4: define the DV and let the function define the IV automatically.
+# imain_eff <- main_effect(df, y = "y")
 
 # ------------------------- Conduct a Chi-square test --------------------------
 xsq <- CACC_XSQ(CACC_matrix)
