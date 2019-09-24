@@ -24,6 +24,7 @@ df <- read_excel(path = "", sheet = "")
 
 CACC_matrix <- CACC(df)
 
+
 - Alternative 2: define all variables, both independent variables and DV.
 
 CACC_matrix <- CACC(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
@@ -41,6 +42,7 @@ CACC_matrix <- CACC(df, y = "y")
 
 imp_var <- importance_variable(df)
 
+
 - Alternative 2: define all variables, both independent variables and DV.
 
 imp_var <- importance_variable(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
@@ -57,6 +59,7 @@ imp_var <- importance_variable(df, y = "y")
 - Alternative 1: let the function automatize the variable selection process.
 
 main_eff <- main_effect(df)
+
 
 - Alternative 2: define all variables, both independent variables and DV.
 
