@@ -3,9 +3,9 @@
 # CACC: Conjunctive Analysis of Case Configurations
 
 # Usage
-CACC(data)
+cacc(data)
 
-CACC(data, x, y)
+cacc(data, x, y)
 
 # Arguments
 
@@ -24,20 +24,20 @@ df <- read_excel(path = "", sheet = "")
  ------------------------------- Conduct a CACC -------------------------------
 - Alternative 1: let the function automatize the variable selection process.
 
-CACC_matrix <- CACC(df)
+cacc_matrix <- cacc(df)
 
 
 - Alternative 2: define all variables, both independent variables and DV.
 
-CACC_matrix <- CACC(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
+cacc_matrix <- cacc(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
 
 - Alternative 3: define the IV and let the function define the DV automatically.
 
-CACC_matrix <- CACC(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
+cacc_matrix <- cacc(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
 
 - Alternative 4: define the DV and let the function define the IV automatically.
 
-CACC_matrix <- CACC(df, y = "y")
+cacc_matrix <- cacc(df, y = "y")
 
  -------------------------- Importance Variable  ------------------------------
 - Alternative 1: let the function automatize the variable selection process.
@@ -77,13 +77,13 @@ main_eff <- main_effect(df, y = "y")
 
  ------------------------- Conduct a Chi-square test --------------------------
 
-xsq <- CACC_XSQ(CACC_matrix)
+xsq <- cacc_xsq(CACC_matrix)
 
  -------------------------------- Conduct a SCI  ------------------------------
 
-SCI <- SCI(CACC_matrix)
+sci <- sci(CACC_matrix)
 
  ----------------------- Conduct a Plot Lorenz Curve  -------------------------
 
-ggLorenzCurve(CACC_matrix)
+gg_lorenz_curve(CACC_matrix)
 
