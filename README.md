@@ -1,3 +1,5 @@
+ DOI: 10.5281/zenodo.3459112
+ 
 # CACC: Conjunctive Analysis of Case Configurations
 
 # Usage
