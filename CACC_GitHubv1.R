@@ -12,7 +12,6 @@
 # ==============================================================================
 
 library(dplyr)
-library(readxl)
 library(ggplot2)
 
 # ==============================================================================
@@ -22,7 +21,7 @@ library(ggplot2)
 #     y = dependet variable (DV)
 # ==============================================================================
 
-CACC <- function (data,
+cacc <- function (data,
                  x = colnames(data[, - ncol(data)]),
                  y = colnames(data[, ncol(data)])) {
 
@@ -111,7 +110,7 @@ importance_variable <- function(data,
   #First, calculate CACC matrix
     #If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(data)) == FALSE){
-    cacc_matrix <- CACC(data)
+    cacc_matrix <- cacc(data)
   }
 
   # Calculate total importance from cacc_matrix
@@ -125,7 +124,7 @@ importance_variable <- function(data,
 
   #Second, for each x calculate your CACC_matrix without it
   for(i in 1:length(x)){
-    cacc <- CACC(data, x = x[-i])
+    cacc <- cacc(data, x = x[-i])
 
     cacc[is.na(cacc)] <- 0   #Replace 0 to NA values
 
@@ -178,7 +177,7 @@ main_effect <- function(data,
   #First, calculate CACC matrix
     #If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(data)) == FALSE){
-    cacc_matrix <- CACC(data)
+    cacc_matrix <- cacc(data)
   }
   
   #Replace 0 to NA values
@@ -227,10 +226,10 @@ main_effect <- function(data,
 # CACC_Xsq function in base R
 # ==============================================================================
 
-CACC_XSQ <- function (cacc_matrix){
+cacc_xsq <- function (cacc_matrix){
   #If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(cacc_matrix)) == FALSE){
-    cacc_matrix <- CACC(cacc_matrix)
+    cacc_matrix <- cacc(cacc_matrix)
     print("CACC matrix has been calculate")
   }
 
@@ -267,7 +266,7 @@ CACC_XSQ <- function (cacc_matrix){
 data_prepare <- function(cacc_matrix){
   #If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(cacc_matrix)) == FALSE){
-    cacc_matrix <- CACC(cacc_matrix)
+    cacc_matrix <- cacc(cacc_matrix)
     print("CACC matrix has been calculate")
   }
 
@@ -326,10 +325,10 @@ data_prepare <- function(cacc_matrix){
 # de la Curva de Lorenz)
 # ==============================================================================
 
-SCI <- function(cacc_matrix){
+sci <- function(cacc_matrix){
   #If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(cacc_matrix)) == FALSE){
-    cacc_matrix <- CACC(cacc_matrix)
+    cacc_matrix <- cacc(cacc_matrix)
     print("CACC matrix has been calculate")
   }
 
@@ -357,10 +356,10 @@ SCI <- function(cacc_matrix){
 # ==============================================================================
 # Plot Lorenz curve
 # ==============================================================================
-ggLorenzCurve <- function(cacc_matrix){
+gg_lorenz_curve <- function(cacc_matrix){
   #If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(cacc_matrix)) == FALSE){
-    cacc_matrix <- CACC(cacc_matrix)
+    cacc_matrix <- cacc(cacc_matrix)
     print("CACC matrix has been calculate")
   }
 
