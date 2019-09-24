@@ -16,13 +16,6 @@ library(readxl)
 library(ggplot2)
 
 # ==============================================================================
-# Read dataframe (df)
-# ==============================================================================
-
-df <- read_excel(path = "", sheet = "")
-
-
-# ==============================================================================
 # CACC function with "dplyr" package
 #     data = database
 #     x = independent variables (IV)
