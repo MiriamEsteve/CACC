@@ -3,7 +3,7 @@
 # Script purpose: To develop functions for an automatic application of CACC
 # Date: 20-12-2018
 # Authors: Esteve, M., Moneva, A., & Hart, T. C.
-# R version 1.0.1 (2018-10-03) -- "Feather Spray"
+# R version 1.0.1 (2019-10-03) -- "Feather Spray"
 # ==============================================================================
 
 
@@ -300,7 +300,7 @@ cacc_xsq <- function (cacc_matrix){
 
 # ==============================================================================
 # data_prepare function in base R
-# Funci??n que prepara CACC_matrix con los c??lculos necesarios para SCI
+# A function that prepares the cacc_matrix properly on which to apply the SCI
 # ==============================================================================
 
 data_prepare <- function(cacc_matrix){
@@ -341,7 +341,7 @@ data_prepare <- function(cacc_matrix){
   cacc_matrix$Config <- vector
 
   #N?? of Configs
-  vector <- N:0  #Vector of number configuration cases
+  vector <- N:0  #Vector of number case configurations
   cacc_matrix$num_Config <- vector
 
   #CDF % of Configs
@@ -361,8 +361,8 @@ data_prepare <- function(cacc_matrix){
 
 # ==============================================================================
 # SCI function in base R
-# Funci??n que tras preparar CACC_matrix calcula SCI (y las ??reas A y B
-# de la Curva de Lorenz)
+# A function that, after preparing the cacc_matrix, calculates its SCI and the 
+# A and B areas of the Lorenz Curve.
 # ==============================================================================
 
 sci <- function(cacc_matrix){
