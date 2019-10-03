@@ -3,7 +3,7 @@
 # Script purpose: To develop functions for an automatic application of CACC
 # Date: 20-12-2018
 # Authors: Esteve, M., Moneva, A., & Hart, T. C.
-# R version 1.0.0 (2018-07-02) -- "Feather Spray"
+# R version 1.0.1 (2018-10-03) -- "Feather Spray"
 # ==============================================================================
 
 
@@ -153,32 +153,41 @@ importance_variable <- function(data,
 #     x = independent variables (IV)
 #     y = dependet variable (DV)
 # ==============================================================================
-### Function that requests the information of each variable from the user ###
 my_scan <- function(list_values, column_name){
   #Order ascending
   list_values <- t( list_values[order(list_values[[1]]), ] )
-  cat("Analyze value for column ", column_name, " (values: ",list_values[1,],"): ")
+  cat("Analyze value for column ", column_name, " (values: ",list_values[1,],") or -1 (Skip this variable): ")
   value <- scan(nmax = 1)
-  
-  #Re-ask for information because it is not correct
-  while(is.na( match(value, list_values) ))
+
+  #If user don't enter a option repeat question
+  if (length(value) == 0)
   {
-    cat("Err value, repeat: column ", column_name, " (values: ",list_values[1,],"): ")
-    
+    cat("Err value, repeat: column ", column_name, " (values: ",list_values[1,],") or -1 (Skip this variable): ")
     value <- scan(nmax = 1)
-  }
+  
+    while(is.na( match(value, list_values) ) & value != -1)
+    {
+      cat("Err value, repeat: column ", column_name, " (values: ",list_values[1,],") or -1 (Skip this variable): ")
+      
+      value <- scan(nmax = 1)
+    }
+  }else
+    while(is.na( match(value, list_values) ) & value != -1)
+    {
+      cat("Err value, repeat: column ", column_name, " (values: ",list_values[1,],") or -1 (Skip this variable): ")
+      
+      value <- scan(nmax = 1)
+    }
+  
+  
   return (value)
 }
 
-### Main effect ###
 main_effect <- function(data,
                         x = colnames(data[, - ncol(data)]),
                         y = colnames(data[, ncol(data)])){
   #First, calculate CACC matrix
-    #If the Break variable does not exist, cacc matrix is calculated.
-  if(("N_Break" %in% names(data)) == FALSE){
-    cacc_matrix <- cacc(data)
-  }
+  cacc_matrix <- CACC(data)
   
   #Replace 0 to NA values
   cacc_matrix[is.na(cacc_matrix)] <- 0
@@ -188,21 +197,29 @@ main_effect <- function(data,
   
   list_total = list() #List of lists
   
-  #Request information for each independent variable
   for(i in 1:columns){
     #Select and check values
     value <- my_scan(unique(cacc_matrix[i]), x[i])
     
-    #Calculating the differential probability of identical pairs of case configurations
-    #except for one variable
+    #If user decide to no analyze this variable continue
+    if(value == -1){
+      x <- x[-i]
+      next
+    }
+    
     PDI <- cacc_matrix %>% 
       group_by_at(vars(-c(i, N_Break, p))) %>% 
       filter(n() > 1)  %>% 
       arrange(.[[i]], .by_group = TRUE) %>%
-      mutate(diff = nth(p, which(.[[i]] == value)[1]) - p )
+      mutate(diff = ifelse(
+                            ((nth(p, which(.[[i]] == value)[1])) != p),
+                                (nth(p, which(.[[i]] == value)[1]) - p ), 
+                                (nth(p, which(.[[i]] == value)[1]))
+                            )
+            )
 
     #Add list into list of lists
-    list_total[i] <- list(PDI$diff)
+    list_total[length(list_total)+1] <- list(PDI$diff)
   }
   
   #Create Data Frame
@@ -210,13 +227,36 @@ main_effect <- function(data,
   for(i in seq(along=list_total)) 
     for(j in seq(list_total[[i]]))
       dat[j,i] <- list_total[[i]][j]
+
   colnames(dat) <- x
-  
+
   #Descriptive
   print(summary(dat))
   
   #Boxplot graph
-  boxplot(dat)
+  #boxplot(dat)
+  #Pair key-value
+  dat <- dat %>%
+      gather()
+  
+  # Plot the main effects with ggplot
+  print(
+    ggplot(data = na.omit(dat),
+           aes(x = reorder(x = key,
+                           X = na.omit(dat$value),
+                           FUN = median
+                          ),
+               y = value
+           )
+    ) +
+      geom_boxplot() +
+      scale_x_discrete(labels = x) +
+      geom_hline(yintercept = 0,
+                 linetype = 2) +
+      xlab("Variables") +
+      ylab("Main effect") +
+      theme_classic()
+  )
   
   return(dat)
 }
