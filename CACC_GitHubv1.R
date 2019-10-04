@@ -312,7 +312,7 @@ data_prepare <- function(cacc_matrix){
 
   #If the entered dataset have the necessary variables to calculate
   #the Lorentz Curve, the following are not calculated
-  if(("N_Break_D" %in% names(cacc_matrix)) == FALSE){
+  if(("N_Break_D" %in% names(cacc_matrix)) == TRUE){
     #Prepare cacc_matrix to calculate Curve Lorenz
     return(cacc_matrix)
   }
