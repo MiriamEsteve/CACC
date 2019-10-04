@@ -431,8 +431,10 @@ gg_lorenz_curve <- function(cacc_matrix){
                        limits = c(0, 1),
                        expand = c(0,0)) +
     geom_abline() +
+    labs(caption = paste("SCI = ", SCI)) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5),
           plot.margin = unit(x = c(.15, .2, .15, .15),
-                             units = "in"))
+                             units = "in")
+          plot.caption = element_text(size = 14))
 }
