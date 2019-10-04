@@ -310,6 +310,13 @@ data_prepare <- function(cacc_matrix){
     print("CACC matrix has been calculate")
   }
 
+  #If the entered dataset have the necessary variables to calculate
+  #the Lorentz Curve, the following are not calculated
+  if(("N_Break_D" %in% names(cacc_matrix)) == FALSE){
+    #Prepare cacc_matrix to calculate Curve Lorenz
+    return(cacc_matrix)
+  }
+  
   #Total configuration cases
   N <- nrow(cacc_matrix)
 
@@ -374,7 +381,7 @@ sci <- function(cacc_matrix){
 
   #If the entered dataset does not have the necessary variables to calculate
   #the Lorentz Curve, the following are calculated
-  if(("$N_Break_D" %in% names(cacc_matrix)) == FALSE){
+  if(("N_Break_D" %in% names(cacc_matrix)) == FALSE){
     #Prepare cacc_matrix to calculate Curve Lorenz
     cacc_matrix <- data_prepare(cacc_matrix)
   }
@@ -405,7 +412,7 @@ gg_lorenz_curve <- function(cacc_matrix){
 
   #If the entered dataset does not have the necessary variables to calculate
   #the Lorentz Curve, the following are calculated
-  if(("$N_Break_D" %in% names(cacc_matrix)) == FALSE){
+  if(("N_Break_D" %in% names(cacc_matrix)) == FALSE){
     #Prepare cacc_matrix to calculate Curve Lorenz
     cacc_matrix <- data_prepare(cacc_matrix)
   }
