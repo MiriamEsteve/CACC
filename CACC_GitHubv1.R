@@ -313,7 +313,6 @@ data_prepare <- function(cacc_matrix){
   #If the entered dataset have the necessary variables to calculate
   #the Lorentz Curve, the following are not calculated
   if(("N_Break_D" %in% names(cacc_matrix)) == TRUE){
-    #Prepare cacc_matrix to calculate Curve Lorenz
     return(cacc_matrix)
   }
   
@@ -384,6 +383,7 @@ sci <- function(cacc_matrix){
   if(("N_Break_D" %in% names(cacc_matrix)) == FALSE){
     #Prepare cacc_matrix to calculate Curve Lorenz
     cacc_matrix <- data_prepare(cacc_matrix)
+    print("Dataset has been prepare")
   }
 
   #Sum L_Curve to calculate area L Curve
@@ -415,6 +415,7 @@ gg_lorenz_curve <- function(cacc_matrix){
   if(("N_Break_D" %in% names(cacc_matrix)) == FALSE){
     #Prepare cacc_matrix to calculate Curve Lorenz
     cacc_matrix <- data_prepare(cacc_matrix)
+    print("Dataset has been prepare")
   }
 
   # plot
