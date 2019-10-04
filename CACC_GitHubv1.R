@@ -307,7 +307,7 @@ data_prepare <- function(cacc_matrix){
   #If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(cacc_matrix)) == FALSE){
     cacc_matrix <- cacc(cacc_matrix)
-    print("CACC matrix has been calculate")
+    print("CACC matrix has been calculated")
   }
 
   #If the entered dataset have the necessary variables to calculate
@@ -375,7 +375,7 @@ sci <- function(cacc_matrix){
   #If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(cacc_matrix)) == FALSE){
     cacc_matrix <- cacc(cacc_matrix)
-    print("CACC matrix has been calculate")
+    print("CACC matrix has been calculated")
   }
 
   #If the entered dataset does not have the necessary variables to calculate
@@ -383,7 +383,7 @@ sci <- function(cacc_matrix){
   if(("N_Break_D" %in% names(cacc_matrix)) == FALSE){
     #Prepare cacc_matrix to calculate Curve Lorenz
     cacc_matrix <- data_prepare(cacc_matrix)
-    print("Dataset has been prepare")
+    print("Dataset has been prepared")
   }
 
   #Sum L_Curve to calculate area L Curve
