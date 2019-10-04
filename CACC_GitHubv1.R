@@ -249,7 +249,6 @@ main_effect <- function(data,
            )
     ) +
       geom_boxplot() +
-      scale_x_discrete(labels = x) +
       geom_hline(yintercept = 0,
                  linetype = 2) +
       xlab("Variables") +
