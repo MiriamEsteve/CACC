@@ -187,7 +187,7 @@ main_effect <- function(data,
                         x = colnames(data[, - ncol(data)]),
                         y = colnames(data[, ncol(data)])){
   #First, calculate CACC matrix
-  cacc_matrix <- CACC(data)
+  cacc_matrix <- cacc(data)
   
   #Replace 0 to NA values
   cacc_matrix[is.na(cacc_matrix)] <- 0
