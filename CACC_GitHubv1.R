@@ -21,43 +21,43 @@ library(tidyverse)
 # ==============================================================================
 
 cacc <- function (data,
-                 x = colnames(data[, - ncol(data)]),
-                 y = colnames(data[, ncol(data)])) {
+                  x = colnames(data[, - ncol(data)]),
+                  y = colnames(data[, ncol(data)])) {
 
   # ------------------------------ Preprocessing -------------------------------
   # Check the dependent variable (DV):
-  #   If it is not numeric, convert its values to numeric and replace them with
+  #   if it is not numeric, convert its values to numeric and replace them with
   #     0 / 1.
-  #   If it is not binary, the function returns an ERROR.
-  #   If it is binary:
+  #   if it is not binary, the function returns an ERROR.
+  #   if it is binary:
   if (length(unique(data[[y]])) != 2) {
-    stop ("ERROR. The dependent variable has to be binary")
+    stop ("ERROR. The dependent variable must be binary")
   } else if (! is.numeric(data[[y]])) {
-    print("ERROR. The dependent variable has to be numeric and binary.")
+    print("ERROR. The dependent variable must be numeric and binary.")
     print("Preprocessing...")
 
-  #     Convert the variable into a factor,
+  #     convert the variable into a factor,
     data[[y]] <- as.factor(data[[y]])
 
-  #     Replace categories with 0 / 1.
+  #     replace categories with 0 / 1.
     levels(data[[y]]) <- c(0, 1)
     print("Done.")
 
-  #     Problem: if R understands that "No" > "Yes" then this variable gives the
+  #     Warning: If R understands that "No" > "Yes" then this variable assigns the
   #     value "1" to "No" and "0" to "Yes".
   } else if (is.double(data[[y]])) {
 
   #       First, the variable must be converted into a integer.
     data[[y]] <- as.integer(data[[y]])
 
-  #       Then, the variable must be converted into a factor.
+  #       Second, the variable must be converted into a factor.
     data[[y]] <- as.factor(data[[y]])
 
-  #       Lastly, categories must be replaced with 0 / 1.
+  #       Third, categories must be replaced with 0 / 1.
     levels(data[[y]]) <- c(0, 1)
   }
 
-  # --------- Handle dominant profiles depending on predetermined size ---------
+  # --------- Handle dominant profiles depending on sample size ---------
   if (nrow(data) < 1000) {
     dom_pro = 5
   } else {
@@ -79,8 +79,10 @@ cacc <- function (data,
     dplyr::rename(N_1 = "n")
 
   # Calculate the probabilities for each dominant profile
-  cacc_matrix <- dplyr::full_join(matrixT, matrix1,
-                             by = x) %>%
+  cacc_matrix <- dplyr::full_join(matrixT, 
+                                  matrix1,
+                                  by = x
+                                 ) %>%
     dplyr::mutate(p = N_1 / N_Break) %>%
     dplyr::filter(N_Break >= dom_pro) %>%
     dplyr::arrange(desc(p)) %>%
