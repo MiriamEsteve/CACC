@@ -1,6 +1,6 @@
 <a href="https://zenodo.org/badge/latestdoi/209760615"><img src="https://zenodo.org/badge/209760615.svg" alt="DOI"></a>
  
-# CACC: Conjunctive Analysis of Case Configurations
+# CACC R package: Conjunctive Analysis of Case Configurations
 
 # Usage
 cacc(data)
