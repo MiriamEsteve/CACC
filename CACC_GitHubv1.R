@@ -404,18 +404,18 @@ sci <- function(cacc_matrix){
 # Plot Lorenz curve
 # ==============================================================================
 gg_lorenz_curve <- function(cacc_matrix){
-  #If the Break variable does not exist, cacc matrix is calculated.
+  # If the Break variable does not exist, a cacc matrix is calculated
   if(("N_Break" %in% names(cacc_matrix)) == FALSE){
     cacc_matrix <- cacc(cacc_matrix)
     print("CACC matrix has been calculate")
   }
 
-  #If the entered dataset does not have the necessary variables to calculate
-  #the Lorentz Curve, the following are calculated
+  # If the entered dataset does not have the necessary variables to calculate
+  # the Lorentz Curve, the following variables are calculated
   if(("N_Break_D" %in% names(cacc_matrix)) == FALSE){
-    #Prepare cacc_matrix to calculate Curve Lorenz
+    # Prepare a cacc_matrix to calculate the Lorenz Curve
     cacc_matrix <- data_prepare(cacc_matrix)
-    print("Dataset has been prepare")
+    print("The dataset has been prepared.")
   }
 
   # plot
@@ -426,15 +426,16 @@ gg_lorenz_curve <- function(cacc_matrix){
     geom_area() +
     scale_x_continuous(name = "Cumulative share of X",
                        limits = c(0, 1),
-                       expand = c(0,0)) +
+                       expand = c(0, 0)) +
     scale_y_continuous(name = "Cumulative share of Y",
                        limits = c(0, 1),
-                       expand = c(0,0)) +
+                       expand = c(0, 0)) +
     geom_abline() +
-    geom_text(x=min(cacc_matrix$Config)+0.1,
-              y=max(cacc_matrix$p_N_Break_D)-0.1,
-              label = paste("SCI = ", round(sci(prepared_cacc_matrix_vict), digits = 3)),
-              size = 5) +
+    annotate(geom = "text",
+             x = min(cacc_matrix$Config) + 0.1,
+             y = max(cacc_matrix$p_N_Break_D) - 0.1,
+             label = paste("SCI = ", round(sci(cacc_matrix), digits = 3)),
+             size = 5) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5),
           plot.margin = unit(x = c(.15, .2, .15, .15),
