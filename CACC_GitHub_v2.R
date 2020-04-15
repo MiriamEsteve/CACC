@@ -40,10 +40,8 @@ cacc <- function (dataset,
 
   # Replace categories with 0 / 1.
     levels(dataset[[y]]) <- c(0, 1)
-    print("Done.")
-
-  # Warning: If R understands that "No" > "Yes" then this variable assigns the
-  #     value "1" to "No" and "0" to "Yes".
+    print("Done!")
+    
   } else if (is.double(dataset[[y]])) {
 
   #       First, the variable must be converted into a integer.
