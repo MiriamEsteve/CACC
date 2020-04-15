@@ -3,13 +3,13 @@
 # CACC R package: Conjunctive Analysis of Case Configurations
 
 # Usage
-cacc(data)
+cacc(dataset)
 
-cacc(data, x, y)
+cacc(dataset, x, y)
 
 # Arguments
 
-data	-- > Data set
+dataset	-- > Data set
 
 x    -->  Dependent variable (binary)
 
@@ -19,71 +19,71 @@ y	   -->  Independents variables
 
 ------------------------------ Read dataset (df) ---------------------------
 
-df <- read_excel(path = "", sheet = "")
+dataset <- read_excel(path = "", sheet = "")
 
  ------------------------------- Conduct a CACC -------------------------------
 - Alternative 1: let the function automatize the variable selection process.
 
-cacc_matrix <- cacc(df)
+cacc_matrix <- cacc(dataset)
 
 
 - Alternative 2: define all variables, both independent variables and DV.
 
-cacc_matrix <- cacc(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
+cacc_matrix <- cacc(dataset, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
 
 - Alternative 3: define the IV and let the function define the DV automatically.
 
-cacc_matrix <- cacc(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
+cacc_matrix <- cacc(dataset, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
 
 - Alternative 4: define the DV and let the function define the IV automatically.
 
-cacc_matrix <- cacc(df, y = "y")
+cacc_matrix <- cacc(dataset, y = "y")
 
  -------------------------- Importance Variable  ------------------------------
 - Alternative 1: let the function automatize the variable selection process.
 
-imp_var <- importance_variable(df)
+imp_var <- importance_variable(dataset)
 
 
 - Alternative 2: define all variables, both independent variables and DV.
 
-imp_var <- importance_variable(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
+imp_var <- importance_variable(dataset, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
 
 - Alternative 3: define the IV and let the function define the DV automatically.
 
-imp_var <- importance_variable(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
+imp_var <- importance_variable(dataset, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
 
 - Alternative 4: define the DV and let the function define the IV automatically.
 
-imp_var <- importance_variable(df, y = "y")
+imp_var <- importance_variable(dataset, y = "y")
 
  ------------------------------- Main effect  ---------------------------------
 - Alternative 1: let the function automatize the variable selection process.
 
-main_eff <- main_effect(df)
+main_eff <- main_effect(dataset)
 
 
 - Alternative 2: define all variables, both independent variables and DV.
 
-main_eff <- main_effect(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
+main_eff <- main_effect(dataset, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"), "y")
 
 - Alternative 3: define the IV and let the function define the DV automatically.
 
-main_eff <- main_effect(df, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
+main_eff <- main_effect(dataset, c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"))
 
 - Alternative 4: define the DV and let the function define the IV automatically.
 
-main_eff <- main_effect(df, y = "y")
+main_eff <- main_effect(dataset, y = "y")
 
  ------------------------- Conduct a Chi-square test --------------------------
 
-xsq <- cacc_xsq(CACC_matrix)
+xsq <- cacc_xsq(dataset)
 
  -------------------------------- Conduct a SCI  ------------------------------
 
-sci <- sci(CACC_matrix)
+sci <- sci(dataset)
 
  ----------------------- Conduct a Plot Lorenz Curve  -------------------------
 
-gg_lorenz_curve(CACC_matrix)
+gg_lorenz_curve(dataset)
 
