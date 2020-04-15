@@ -1,9 +1,9 @@
 # ==============================================================================
 # Project: CACC R package
 # Script purpose: To develop functions for an automatic application of CACC
-# Date: 20-12-2018
+# Date: 2020-04-15
 # Authors: Esteve, M., Moneva, A., & Hart, T. C.
-# R version 1.0.1 (2019-10-03) -- "Feather Spray"
+# R version 2.0.1 (2020-04-15) -- "Feather Spray"
 # ==============================================================================
 
 
