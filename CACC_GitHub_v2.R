@@ -3,25 +3,37 @@
 # Script purpose: To develop functions for an automatic application of CACC
 # Date: 2020-04-15
 # Authors: Esteve, M., Moneva, A., & Hart, T. C.
-# R version 2.0.1 (2020-04-15) -- "Feather Spray"
+# R version 2.0.1 (2020-04-25) -- "Feather Spray"
 # ==============================================================================
 
 
 # ==============================================================================
 # Load packages
 # ==============================================================================
-library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(stats)
+library(ggplot2)
 
 # ==============================================================================
 # CACC function with "dplyr" package
 #     dataset = database
 #     x = independent variables (IV)
 #     y = dependet variable (DV)
+#!diagnostics off
 # ==============================================================================
-cacc <- function (dataset,
-                  x = colnames(dataset[, - ncol(dataset)]),
-                  y = colnames(dataset[, ncol(dataset)])) {
-
+cacc <- function (dataset,x, y) {
+  
+  # If CACC matrix is already calculated stop execution
+  if(("N_Break" %in% names(dataset)) == TRUE){
+    print("CACC matrix is already calculated")
+    return(dataset)
+  }
+  
+  # Dependent variable
+  x = colnames(dataset[, - ncol(dataset)])
+  # Independet variable
+  y = colnames(dataset[, ncol(dataset)])
   # ------------------------------ Preprocessing -------------------------------
   # Check the dependent variable (DV):
   #   if it is not numeric, convert its values to numeric and replace them with
@@ -34,117 +46,59 @@ cacc <- function (dataset,
   } else if (! is.numeric(dataset[[y]])) {
     print("ERROR. The dependent variable must be numeric and binary.")
     print("Preprocessing...")
-
+    
     # Convert the variable into a factor,
     dataset[[y]] <- as.factor(dataset[[y]])
-
+    
     # Replace categories with 0 / 1.
     levels(dataset[[y]]) <- c(0, 1)
     print("Done!")
     
   } else if (is.double(dataset[[y]])) {
-
+    
     # First, the variable must be converted into a integer.
     dataset[[y]] <- as.integer(dataset[[y]])
-
+    
     # Second, the variable must be converted into a factor.
     dataset[[y]] <- as.factor(dataset[[y]])
-
+    
     # Third, categories must be replaced with 0 / 1.
     levels(dataset[[y]]) <- c(0, 1)
   }
-
+  
   # --------- Handle dominant profiles depending on sample size ---------
   if (nrow(dataset) < 1000) {
     dom_pro = 5
   } else {
     dom_pro = 10
   }
-
+  
   # ------------------------- Generate the CACC matrix -------------------------
   # Generate a matrix with total frequencies.
   matrixT <- dataset %>%
     dplyr::count(.dots = x) %>%
     dplyr::arrange(desc(n)) %>%
     dplyr::rename(N_Break = "n")
-
+  
   # Generate a matrix with DV frequencies based on the positive class (i.e. 1).
   matrix1 <- dataset %>%
     dplyr::filter(get(y) == 1) %>%
     dplyr::count(.dots = x) %>%
     dplyr::arrange(desc(n)) %>%
     dplyr::rename(N_1 = "n")
-
+  
   # Calculate the probabilities for each dominant profile
-  cacc_matrix <- dplyr::full_join(matrixT, 
+  cacc_matrix <- dplyr::full_join(matrixT,
                                   matrix1,
                                   by = x
-                                 ) %>%
+  ) %>%
     dplyr::mutate(p = N_1 / N_Break) %>%
     dplyr::filter(N_Break >= dom_pro) %>%
     dplyr::arrange(desc(p)) %>%
     dplyr::select(- one_of("N_1"))
-
+  
   # Return the CACC matrix.
   return (cacc_matrix)
-}
-
-
-# ==============================================================================
-# importance_variable function in base R
-#     dataset = database
-#     x = independent variables (IV)
-#     y = dependet variable (DV)
-# ==============================================================================
-### Function that normalizes the results ###
-normalize <- function(x) {
-    return ((x - min(x)) / (max(x) - min(x)))
-}
-
-### Importance variable Ranking ###
-importance_variable <- function(dataset,
-                                x = colnames(dataset[, - ncol(dataset)]),
-                                y = colnames(dataset[, ncol(dataset)])){
-  # First, calculate CACC matrix
-  #   If the Break variable does not exist, cacc matrix is calculated.
-  if(("N_Break" %in% names(dataset)) == FALSE){
-    cacc_matrix <- cacc(dataset)
-  }else{
-    cacc_matrix <- dataset
-  }
-  
-  # Calculate total importance from cacc_matrix
-  cacc_matrix[is.na(cacc_matrix)] <- 0   #Replace 0 to NA values
-
-  # Weighted average
-  mean_x <- mean(cacc_matrix$p)
-  support <-  nrow(cacc_matrix)
-
-  var_imp <- mean_x * support
-
-  # Second, for each x calculate your CACC_matrix without it
-  for(i in 1:length(x)){
-    cacc <- cacc(dataset, x = x[-i])
-
-    cacc[is.na(cacc)] <- 0   #Replace 0 to NA values
-
-    mean_x <- mean(cacc$p)
-    support <-  nrow(cacc)
-    var_imp <-  union(var_imp, mean_x * support) #Add in a array P for each x
-  }
-  
-  # Normalize results
-  normal <- normalize(abs(var_imp - var_imp[1]))*100
-  
-  # Save result in a data frame
-  Var_Importance <- data.frame("Attribute" = x[-1],
-                    "Importance.of.Variable" = normal[-1])
-
-  # Sort descending
-  Var_Importance <- Var_Importance[order(-Var_Importance$Importance.of.Variable), ]
-
-
-  return(Var_Importance)
 }
 
 # ==============================================================================
@@ -152,6 +106,7 @@ importance_variable <- function(dataset,
 #     data = database
 #     x = independent variables (IV)
 #     y = dependet variable (DV)
+#!diagnostics off
 # ==============================================================================
 ### Function that requests the values of each IV as DV ###
 my_scan <- function(list_values, column_name){
@@ -159,13 +114,13 @@ my_scan <- function(list_values, column_name){
   list_values <- t( list_values[order(list_values[[1]]), ] )
   cat("Analyze value for column ", column_name, " (values: ",list_values[1,],") or -1 (Skip this variable): \n")
   value <- scan(nmax = 1)
-
+  
   # If user don't enter a option repeat question
   if (length(value) == 0)
   {
     cat("ERROR value, repeat: column ", column_name, " (values: ",list_values[1,],") or -1 (Skip this variable): \n")
     value <- scan(nmax = 1)
-  
+    
     while(is.na( match(value, list_values) ) & value != -1)
     {
       cat("ERROR value, repeat: column ", column_name, " (values: ",list_values[1,],") or -1 (Skip this variable): \n")
@@ -185,15 +140,22 @@ my_scan <- function(list_values, column_name){
 }
 
 ### Function Main Effect ###
-main_effect <- function(dataset,
-                        x = colnames(dataset[, - ncol(dataset)]),
-                        y = colnames(dataset[, ncol(dataset)])){
+main_effect <- function(dataset, x, y){
   # First, calculate CACC matrix
   #   If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(dataset)) == FALSE){
+    # Dependent variables
+    x = colnames(dataset[, - ncol(dataset)])
+    #Independent variables
+    y = colnames(dataset[, ncol(dataset)])
+    #Cacc matrix
     cacc_matrix <- cacc(dataset)
   }else{
     cacc_matrix <- dataset
+    # Dependent variables
+    x = colnames(dataset[, !names(dataset) %in% c("N_Break", "p")])
+    #Independent variables
+    y = colnames(dataset[, ncol(dataset)])
   }
   
   # Replace 0 to NA values
@@ -225,11 +187,11 @@ main_effect <- function(dataset,
       columns <- length(x) #New number of DV
       next #It continues with the following variable
     }
-  
+    
     # Grouping IV with x[i] variable as DV
-    PDI <- cacc_matrix %>% 
-                  group_by_at(vars(-c(i, N_Break, p)))%>% 
-                  filter(n() > 1)
+    PDI <- cacc_matrix %>%
+      dplyr::group_by_at(dplyr::vars(-c(i, N_Break, p))) %>%
+      dplyr::filter(dplyr::n() > 1)
     
     # If there is no grouping for this variable with its value it is ignored
     if(nrow(PDI) == 0){
@@ -237,13 +199,13 @@ main_effect <- function(dataset,
       next #It continues with the following variable
     }
     else{
-      PDI <- PDI  %>% 
-                    arrange(.[[i]], .by_group = TRUE) %>%
-                    mutate(diff = ifelse(
-                              ((nth(p, which(.[[i]] == value)[1])) != p),
-                              (nth(p, which(.[[i]] == value)[1]) - p ), 
-                              (nth(p, which(.[[i]] == value)[1]))
-                            )
+      PDI <- PDI  %>%
+        dplyr::arrange(.[[i]], .by_group = TRUE) %>%
+        dplyr::mutate(diff = if_else(
+          ((dplyr::nth(p, which(.[[i]] == value)[1])) != p),
+          ((dplyr::nth(p, which(.[[i]] == value)[1])) - p ),
+          (dplyr::nth(p, which(.[[i]] == value)[1]))
+        )
         )
       col_names <- c(col_names, x[i])
     }
@@ -254,36 +216,35 @@ main_effect <- function(dataset,
   
   # Create Data Frame
   dataF <- data.frame()
-  for(i in seq(along=list_total)) 
+  for(i in seq(along=list_total))
     for(j in seq(list_total[[i]]))
       dataF[j,i] <- list_total[[i]][j]
-
+  
   # Columns names with grouping
   colnames(dataF) <- col_names
-
+  
   # Descriptive
   print(summary(dataF))
   
   # Boxplot graph
   #   Pair key-value
   dataF <- dataF %>%
-      gather()
+    tidyr::gather()
   
   # Plot the main effects with ggplot
   print(
-        ggplot(data = na.omit(dataF),
-               aes(x = reorder(x = key,
-                               X = na.omit(dataF$value),
-                               FUN = median
-                              ),
-                 y = value)
-        ) +
-        geom_boxplot() +
-        geom_hline(yintercept = 0,
-                   linetype = 2) +
-        xlab("Variables") +
-        ylab("Main effect") +
-        theme_bw()
+    ggplot2::ggplot(data = na.omit(dataF),
+                    ggplot2::aes(x = stats::reorder(x = key,
+                                                    X = stats::na.omit(dataF$value),
+                                                    FUN = stats::median),
+                                 y = value)
+    ) +
+      ggplot2::geom_boxplot() +
+      ggplot2::geom_hline(yintercept = 0,
+                          linetype = 2) +
+      ggplot2::xlab("Variables") +
+      ggplot2::ylab("Main effect") +
+      ggplot2::theme_bw()
   )
   
   return(dataF)
@@ -292,61 +253,71 @@ main_effect <- function(dataset,
 
 # ==============================================================================
 # CACC_Xsq function in base R
+#!diagnostics off
 # ==============================================================================
-cacc_xsq <- function (dataset){
-  # If the Break variable does not exist, cacc matrix is calculated.
+cacc_xsq <- function (dataset, x, y){
+  # First, calculate CACC matrix
+  #   If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(dataset)) == FALSE){
+    # Dependent variables
+    x = colnames(dataset[, - ncol(dataset)])
+    #Independent variables
+    y = colnames(dataset[, ncol(dataset)])
+    #Cacc matrix
     cacc_matrix <- cacc(dataset)
-    print("CACC matrix has been calculate")
   }else{
     cacc_matrix <- dataset
+    # Dependent variables
+    x = colnames(dataset[, !names(dataset) %in% c("N_Break", "p")])
+    #Independent variables
+    y = colnames(dataset[, ncol(dataset)])
   }
-
+  
   # Declare the variable containing the number of times each dominant profile is
   #   observed in the sample.
   obs <- cacc_matrix$N_Break
-
+  
   # Count the dominant profiles observed.
   N_obs <- nrow(data.frame(obs))
-
+  
   # Obtain the expected count vector by weighting the total amount of dominant
   #   observations by the amount of dominant profiles observed.
   exp <- rep(sum(obs) / N_obs, N_obs)
-
+  
   # Perform the Chi-square test.
   #   rescale.p = TRUE because probabilities must sum 1.
   xsq <- chisq.test(x = obs, p = exp, rescale.p = TRUE)
-
+  
   # Show result
   xsq <- data.frame("X_Square" = xsq$statistic,
                     "df" = xsq$parameter,
                     "p" = xsq$p.value)
   rownames(xsq) <- NULL
-
+  
   return (xsq)
 }
 
 # ==============================================================================
 # Lorenz curve function in base R
-#   A function that, after preparing the cacc_matrix, calculates its SCI and the 
+#   A function that, after preparing the cacc_matrix, calculates its SCI and the
 #   A and B areas of the Lorenz Curve.
 # ==============================================================================
 ### Function that prepares the cacc_matrix properly on which to apply the SCI ###
 data_prepare <- function(cacc_matrix){
   # Total configuration cases
   N <- nrow(cacc_matrix)
-
+  
   # N_Break ordered from lowest to highest
   cacc_matrix <- cacc_matrix[order(cacc_matrix$N_Break, decreasing = TRUE), ]
-
+  
   # Insert new row with total sum of N_Break
   vector <- c(rep(0, length(cacc_matrix)))  #Vector of zeros
   cacc_matrix <- rbind(vector, cacc_matrix) #Add vector into dataframe
   cacc_matrix$N_Break[1] <- sum(cacc_matrix$N_Break) #Sum N_Break
-
+  
   # Cumulative N_Break
   cacc_matrix$N_Break_D <- 0 #Initialise column
-
+  
   for(i in 1:N){
     if(i == 1){
       cacc_matrix$N_Break_D[i] <- cacc_matrix$N_Break[i]
@@ -354,105 +325,120 @@ data_prepare <- function(cacc_matrix){
     }
     cacc_matrix$N_Break_D[i] <- cacc_matrix$N_Break_D[i - 1] - cacc_matrix$N_Break[i]
   }
-
+  
   # %CFD of N_Break_D
   maxAcumulative <- cacc_matrix$N_Break[1]
   cacc_matrix$p_N_Break_D <- cacc_matrix$N_Break_D/maxAcumulative
-
+  
   # Column Configs
   vector <- seq(from = 1, to = 0, length.out = N + 1)  #Vector of zeros
   cacc_matrix$Config <- vector
-
+  
   # Number of Configs
   vector <- N:0  #Vector of number case configurations
   cacc_matrix$num_Config <- vector
-
+  
   # CDF % of Configs
   cacc_matrix$p_Configs <- cacc_matrix$num_Config/N
-
-
+  
+  
   # Area under L Curve
   cacc_matrix$L_Curve <- 0 #Initialise column
-
+  
   for (i in 1:N){
     cacc_matrix$L_Curve[i] <- ((cacc_matrix$p_N_Break_D[i+1]+cacc_matrix$p_N_Break_D[i])/2)*(1/N)
   }
-
-
+  
+  
   return (cacc_matrix)
 }
 
 ### Function that calculate SCI value ###
-sci <- function(dataset){
-  # If the Break variable does not exist, cacc matrix is calculated.
+sci <- function(dataset, x, y){
+  # First, calculate CACC matrix
+  #   If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(dataset)) == FALSE){
+    # Dependent variables
+    x = colnames(dataset[, - ncol(dataset)])
+    #Independent variables
+    y = colnames(dataset[, ncol(dataset)])
+    #Cacc matrix
     cacc_matrix <- cacc(dataset)
-    print("CACC matrix has been calculated")
   }else{
     cacc_matrix <- dataset
+    # Dependent variables
+    x = colnames(dataset[, !names(dataset) %in% c("N_Break", "p")])
+    #Independent variables
+    y = colnames(dataset[, ncol(dataset)])
   }
-
+  
   # If the entered dataset does not have the necessary variables to calculate
   #   the Lorentz Curve, the following are calculated
   if(("N_Break_D" %in% names(cacc_matrix)) == FALSE){
     # Prepare cacc_matrix to calculate Curve Lorenz
     cacc_matrix <- data_prepare(cacc_matrix)
-    print("Dataset has been prepared")
   }
-
+  
   # Sum L_Curve to calculate area L Curve
   area_L_Curve <- sum(cacc_matrix$L_Curve)
-
+  
   # Area A
   A <- 0.5 - area_L_Curve
-
+  
   # Area B
   B <- area_L_Curve/0.5
-
+  
   SCI <- 1-B
-
+  
   return (SCI)
 }
 
 ### Function that plot Lorenz Curve ###
-gg_lorenz_curve <- function(dataset){
-  # If the Break variable does not exist, a cacc matrix is calculated
+gg_lorenz_curve <- function(dataset, x, y){
+  # First, calculate CACC matrix
+  #   If the Break variable does not exist, cacc matrix is calculated.
   if(("N_Break" %in% names(dataset)) == FALSE){
+    # Dependent variables
+    x = colnames(dataset[, - ncol(dataset)])
+    #Independent variables
+    y = colnames(dataset[, ncol(dataset)])
+    #Cacc matrix
     cacc_matrix <- cacc(dataset)
-    print("CACC matrix has been calculate")
   }else{
     cacc_matrix <- dataset
+    # Dependent variables
+    x = colnames(dataset[, !names(dataset) %in% c("N_Break", "p")])
+    #Independent variables
+    y = colnames(dataset[, ncol(dataset)])
   }
-
+  
   # If the entered dataset does not have the necessary variables to calculate
   #   the Lorentz Curve, the following variables are calculated
   if(("N_Break_D" %in% names(cacc_matrix)) == FALSE){
     # Prepare a cacc_matrix to calculate the Lorenz Curve
     cacc_matrix <- data_prepare(cacc_matrix)
-    print("The dataset has been prepared.")
   }
-
+  
   # Plot Lorenz Curve
-  ggplot(data = cacc_matrix,
-         mapping = aes(x = cacc_matrix$Config,
-                       y = cacc_matrix$p_N_Break_D)) +
-    ggtitle("Lorenz Curve") +
-    geom_area() +
-    scale_x_continuous(name = "Cumulative share of X",
-                       limits = c(0, 1),
-                       expand = c(0, 0)) +
-    scale_y_continuous(name = "Cumulative share of Y",
-                       limits = c(0, 1),
-                       expand = c(0, 0)) +
-    geom_abline() +
-    annotate(geom = "text",
-             x = min(cacc_matrix$Config) + 0.15,
-             y = max(cacc_matrix$p_N_Break_D) - 0.1,
-             label = paste("SCI = ", round(sci(cacc_matrix), digits = 3)),
-             size = 5) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5),
-          plot.margin = unit(x = c(.15, .2, .15, .15),
-                             units = "in")
-          )
+  ggplot2::ggplot(data = cacc_matrix,
+                  mapping = aes(x = Config,
+                                y = p_N_Break_D)) +
+    ggplot2::ggtitle("Lorenz Curve") +
+    ggplot2::geom_area() +
+    ggplot2::scale_x_continuous(name = "Cumulative share of X",
+                                limits = c(0, 1),
+                                expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(name = "Cumulative share of Y",
+                                limits = c(0, 1),
+                                expand = c(0, 0)) +
+    ggplot2::geom_abline() +
+    ggplot2::annotate(geom = "text",
+                      x = min(cacc_matrix$Config) + 0.15,
+                      y = max(cacc_matrix$p_N_Break_D) - 0.1,
+                      label = paste("SCI = ", round(sci(cacc_matrix), digits = 3)),
+                      size = 5) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(plot.title = element_text(hjust = 0.5),
+                   plot.margin = unit(x = c(.15, .2, .15, .15),
+                                      units = "in"))
 }
