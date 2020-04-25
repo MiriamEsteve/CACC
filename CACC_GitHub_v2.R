@@ -3,7 +3,7 @@
 # Script purpose: To develop functions for an automatic application of CACC
 # Date: 2020-04-15
 # Authors: Esteve, M., Moneva, A., & Hart, T. C.
-# R version 2.0.1 (2020-04-25) -- "Feather Spray"
+# R version 4.0.0 (2020-04-24) -- "Arbor Day"
 # ==============================================================================
 
 
