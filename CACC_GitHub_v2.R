@@ -246,8 +246,6 @@ main_effect <- function(dataset, x, y){
       ggplot2::ylab("Main effect") +
       ggplot2::theme_bw()
   )
-  
-  return(dataF)
 }
 
 
